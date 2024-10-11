@@ -6,8 +6,10 @@ namespace PayslipCalc
     {
         public decimal GrossSalary { get; set; }
         public decimal NetSalary { get; set; }
+        public decimal AdvanceSalary { get; set; }
         public decimal IRRF { get; set; }
         public decimal INSS { get; set; }
+        public bool ReceiveAdvance { get; set; }
     }
 
     public class SalaryCalculate
@@ -92,14 +94,28 @@ namespace PayslipCalc
         {
             CalculateINSS(pay);
             CalculateIR(pay);
-            pay.NetSalary = pay.GrossSalary - pay.INSS - pay.IRRF;
+            if (pay.ReceiveAdvance)
+            {
+                pay.AdvanceSalary = pay.GrossSalary * 0.4m;
+                pay.NetSalary = pay.GrossSalary - pay.INSS - pay.IRRF - pay.AdvanceSalary;
+            }
+            else
+            {
+                pay.NetSalary = pay.GrossSalary - pay.INSS - pay.IRRF;
+            }
+            
+            
         }
 
         public class SalaryPresenter
         {
             public void DisplayPayslip(Payslip pay)
             {
-                Console.WriteLine("Net Salary: " + pay.NetSalary.ToString("F2"));
+                Console.WriteLine("\nNet Salary: " + pay.NetSalary.ToString("F2"));
+                if (pay.ReceiveAdvance) 
+                { 
+                    Console.WriteLine("Advance Salary: " + pay.AdvanceSalary.ToString("F2")); 
+                }
                 Console.WriteLine("INSS: " + pay.INSS.ToString("F2"));
                 Console.WriteLine("IRRF: " + pay.IRRF.ToString("F2"));
             }
@@ -120,6 +136,7 @@ namespace PayslipCalc
                 SalaryPresenter presenter = new SalaryPresenter();
 
                 pay.GrossSalary = GetValidSalary();
+                pay.ReceiveAdvance = GetUserReceiveAdvance();
                 calculator.CalculateNetSalary(pay);
                 presenter.DisplayPayslip(pay);
 
@@ -129,7 +146,7 @@ namespace PayslipCalc
                 if (key != "R")
                 {
                     Console.WriteLine("Closing app...");
-                    Thread.Sleep(3000);
+                    Thread.Sleep(1300);
                     Environment.Exit(0);
                 }
             }
@@ -138,6 +155,7 @@ namespace PayslipCalc
         private static decimal GetValidSalary()
         {
             decimal grossSal;
+            
             while (true)
             {
                 Console.WriteLine("Enter your salary: (0000.00)");
@@ -145,6 +163,30 @@ namespace PayslipCalc
                     return grossSal;
                 else
                     Console.WriteLine("Invalid salary, please try again.");
+            }
+        }
+
+        private static bool GetUserReceiveAdvance()
+        {
+            string input;
+
+            while (true)
+            {
+                Console.WriteLine("Do you receive salary advance? (y/N)");
+                input = Console.ReadLine().ToUpper().Trim();
+
+                if (input == "Y")
+                {
+                    return true;
+                }
+                else if (input == "N")
+                {
+                    return false;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please enter 'y' or 'N'.");
+                }
             }
         }
     }
