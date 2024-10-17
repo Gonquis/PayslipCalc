@@ -7,6 +7,7 @@ namespace PayslipCalc
         public decimal GrossSalary { get; set; }
         public decimal NetSalary { get; set; }
         public decimal AdvanceSalary { get; set; }
+        public decimal Salary { get; set; }
         public decimal IRRF { get; set; }
         public decimal INSS { get; set; }
         public bool ReceiveAdvance { get; set; }
@@ -97,7 +98,8 @@ namespace PayslipCalc
             if (pay.ReceiveAdvance)
             {
                 pay.AdvanceSalary = pay.GrossSalary * 0.4m;
-                pay.NetSalary = pay.GrossSalary - pay.INSS - pay.IRRF - pay.AdvanceSalary;
+                pay.Salary = pay.GrossSalary - pay.INSS - pay.IRRF - pay.AdvanceSalary;
+                pay.NetSalary = pay.AdvanceSalary + pay.Salary;
             }
             else
             {
@@ -114,7 +116,8 @@ namespace PayslipCalc
                 Console.WriteLine("\nNet Salary: " + pay.NetSalary.ToString("F2"));
                 if (pay.ReceiveAdvance) 
                 { 
-                    Console.WriteLine("Advance Salary: " + pay.AdvanceSalary.ToString("F2")); 
+                    Console.WriteLine("Advance Salary: " + pay.AdvanceSalary.ToString("F2"));
+                    Console.WriteLine("Salary: " + pay.Salary.ToString("F2"));
                 }
                 Console.WriteLine("INSS: " + pay.INSS.ToString("F2"));
                 Console.WriteLine("IRRF: " + pay.IRRF.ToString("F2"));
